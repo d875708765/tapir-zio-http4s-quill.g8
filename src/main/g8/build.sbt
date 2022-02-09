@@ -59,5 +59,5 @@ lazy val root = (project in file("."))
 val dockerSettings = Seq(
   dockerBaseImage := "openjdk:17-bullseye",
   dockerUsername := None,
-  dockerExposedPorts := Seq(6000)
+  dockerExposedPorts := Seq(9000)
 )
