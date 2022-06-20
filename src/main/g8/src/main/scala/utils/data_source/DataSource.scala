@@ -1,10 +1,7 @@
 package utils.data_source
 
 import io.circe.{Json, JsonObject, parser}
-import io.getquill.context.ContextEffect
-import io.getquill.context.qzio.ZioJdbcUnderlyingContext
-import io.getquill.{PostgresDialect, PostgresZioJdbcContext, SnakeCase}
-import zio.ZIO
+import io.getquill.{PostgresZioJdbcContext, SnakeCase}
 
 import java.time.{Instant, LocalDateTime}
 
@@ -12,29 +9,6 @@ object DataSource {
 
   object PostgresQuillContext extends PostgresZioJdbcContext(SnakeCase) {
 
-    override val underlying
-        : ZioJdbcUnderlyingContext[PostgresDialect, SnakeCase.type] =
-      new PostgresZioJdbcContext.Underlying[SnakeCase.type](naming) {
-        override protected val effect: ContextEffect[Result] =
-          new ContextEffect[Result] {
-            override def wrap[T](t: => T): Result[T] =
-              throw new IllegalArgumentException(
-                "Runner not used for zio context."
-              )
-
-            override def push[A, B](
-                result: Result[A]
-            )(
-                f: A => B
-            ): Result[B] =
-              result.map(f)
-
-            override def seq[A](
-                f: List[Result[A]]
-            ): Result[List[A]] =
-              ZIO.collectAll(f)
-          }
-      }
 
     implicit val jsonEncoder: Encoder[Json] = encoder(
       java.sql.Types.OTHER,
@@ -58,26 +32,26 @@ object DataSource {
 
     implicit class JsonBOps(left: Json) {
       def :||(right: Json) = quote(
-        infix"\${left} || \${right}::jsonb".as[Json]
+        infix"${left} || ${right}::jsonb".as[Json]
       )
     }
 
     implicit class InstantOps(dt: Instant) {
 
       val > = quote { (right: Instant) =>
-        infix"\$dt > \$right".as[Boolean]
+        infix"$dt > $right".as[Boolean]
       }
 
       val >= = quote { (right: Instant) =>
-        infix"\$dt >= \$right".as[Boolean]
+        infix"$dt >= $right".as[Boolean]
       }
 
       val < = quote { (right: Instant) =>
-        infix"\$dt < \$right".as[Boolean]
+        infix"$dt < $right".as[Boolean]
       }
 
       val <= = quote { (right: Instant) =>
-        infix"\$dt <= \$right".as[Boolean]
+        infix"$dt <= $right".as[Boolean]
       }
 
     }
@@ -85,19 +59,19 @@ object DataSource {
     implicit class LocalDateTimeOps(left: LocalDateTime) {
 
       val :> = quote { (right: LocalDateTime) =>
-        infix"\$left > \$right".as[Boolean]
+        infix"$left > $right".as[Boolean]
       }
 
       val :>= = quote { (right: LocalDateTime) =>
-        infix"\$left >= \$right".as[Boolean]
+        infix"$left >= $right".as[Boolean]
       }
 
       val :< = quote { (right: LocalDateTime) =>
-        infix"\$left < \$right".as[Boolean]
+        infix"$left < $right".as[Boolean]
       }
 
       val :<= = quote { (right: LocalDateTime) =>
-        infix"\$left <= \$right".as[Boolean]
+        infix"$left <= $right".as[Boolean]
       }
 
     }
