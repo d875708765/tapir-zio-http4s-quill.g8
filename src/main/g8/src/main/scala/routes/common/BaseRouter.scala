@@ -3,7 +3,7 @@ package routes.common
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 import sttp.tapir.generic.auto.schemaForCaseClass
-import sttp.tapir.json.circe.{jsonBody, _}
+import sttp.tapir.json.circe._
 import sttp.tapir.ztapir._
 import types.error.ErrorInfos._
 

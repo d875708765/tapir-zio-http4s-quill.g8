@@ -21,7 +21,7 @@ object DataSource {
     )
 
     implicit val jsonDecoder: Decoder[Json] =
-      decoder((index, row, session) => {
+      decoder((index, row, _) => {
         // 这里就不处理失败的场景
         parser
           .parse(
