@@ -4,6 +4,7 @@ import cats.data.Kleisli
 import org.http4s.blaze.server.BlazeServerBuilder
 import org.http4s.server.Router
 import org.http4s.{Request, Response}
+import types.config.AppConfig
 import zio.config.getConfig
 import zio.interop.catz._
 import zio.{ExitCode, RIO, URIO, ZIO}
@@ -19,7 +20,7 @@ object Loader extends CatsApp {
     ).orNotFound
 
     /** web 服务
-      */
+     */
     val server: ZIO[AllEnv, Throwable, Unit] =
       ZIO.runtime[AllEnv].flatMap { implicit runtime =>
         for {

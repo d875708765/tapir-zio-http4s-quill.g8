@@ -1,4 +1,4 @@
-package application
+package types.config
 
 import zio.config._
 import ConfigDescriptor._
@@ -9,24 +9,21 @@ import zio.{Has, Layer}
 final case class ServerConfig(host: String, port: Int)
 
 final case class AppConfig(
-    serverConfig: ServerConfig
-)
+                            serverConfig: ServerConfig
+                          )
 
 object AppConfig {
 
-  val serverConfigDescriptor: ConfigDescriptor[ServerConfig] = (
-    string("host") |@|
+  private val serverConfigDescriptor: ConfigDescriptor[ServerConfig] = (
+    string("host") zip
       int("port")
-  )(ServerConfig.apply, ServerConfig.unapply)
+    ).to[ServerConfig]
 
-  val appConfigDescriptor: ConfigDescriptor[AppConfig] = (
+  private val appConfigDescriptor: ConfigDescriptor[AppConfig] = (
     nested("serverConfig") { serverConfigDescriptor }
-  )(
-    AppConfig.apply,
-    AppConfig.unapply
-  )
+    ).to[AppConfig]
 
-  val appConfigLayer: Layer[ReadError[String], Has[AppConfig]] =
+  val live: Layer[ReadError[String], Has[AppConfig]] =
     fromTypesafeConfig(ConfigFactory.load(), appConfigDescriptor)
 
 }
