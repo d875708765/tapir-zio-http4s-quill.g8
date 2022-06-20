@@ -2,7 +2,23 @@ import sbt._
 
 object Dependencies {
 
-  val tapirVersion = "0.20.0-M4"
+  object Versions {
+    val zio = "1.0.14"
+    val zioConfig = "2.0.4"
+    val zioMagic = "0.3.8"
+    val zioLogging = "0.5.14"
+    val akka = "2.6.19"
+    val akkaManagement = "1.1.3"
+    val akkaProjection = "1.2.4"
+    val circe = "0.14.2"
+    val quill = "3.16.5"
+    val postgres = "42.2.24"
+    val scalaTest = "3.2.12"
+    val tapir = "0.20.0-M4"
+    val http4s = "0.23.12"
+    val sttp = "3.5.2"
+  }
+
 
   val tapir = Seq(
     "com.softwaremill.sttp.tapir" %% "tapir-zio",
@@ -15,90 +31,77 @@ object Dependencies {
     "com.softwaremill.sttp.tapir" %% "tapir-redoc-bundle",
     "com.softwaremill.sttp.tapir" %% "tapir-prometheus-metrics",
     "com.softwaremill.sttp.tapir" %% "tapir-opentelemetry-metrics"
-  ).map(_ % tapirVersion)
+  ).map(_ % Versions.tapir)
 
-  val http4sVersion = "0.23.7"
 
   val http4s = Seq(
     "org.http4s" %% "http4s-blaze-client",
     "org.http4s" %% "http4s-blaze-server",
     "org.http4s" %% "http4s-core",
     "org.http4s" %% "http4s-circe"
-  ).map(_ % http4sVersion)
+  ).map(_ % Versions.http4s)
 
   val zioLoggingVersion = "0.5.12"
 
   val ZioConfigVersion = "1.0.5"
 
-  val log = Seq(
-    "ch.qos.logback" % "logback-classic" % "1.2.6",
-    "dev.zio" %% "zio-logging" % zioLoggingVersion,
-    "dev.zio" %% "zio-logging-slf4j" % zioLoggingVersion,
-    "dev.zio" %% "zio-config" % ZioConfigVersion,
-    "dev.zio" %% "zio-config-typesafe" % ZioConfigVersion,
-    "dev.zio" %% "zio" % "1.0.2",
-    "dev.zio" %% "zio-interop-cats" % "2.2.0.1",
-    "dev.zio" %% "zio-nio" % "1.0.0-RC11"
+
+  val zioLogging = Seq(
+    "dev.zio" %% "zio-logging"       % Versions.zioLogging,
+    "dev.zio" %% "zio-logging-slf4j" % Versions.zioLogging,
   )
 
-  val quillVersion = "3.11.0"
+  val logging = Seq(
+    "ch.qos.logback"                 % "logback-classic" % "1.2.11"
+  ) ++ zioLogging
+
+
+  val zioTest = Seq(
+    "dev.zio" %% "zio-test"          % Versions.zio % "test",
+    "dev.zio" %% "zio-test-magnolia" % Versions.zio % "test", // optional
+    "dev.zio" %% "zio-test-sbt"      % Versions.zio % "test"
+  )
+
+  val zioConfig = Seq(
+    "dev.zio" %% "zio-config"          % Versions.zioConfig,
+    "dev.zio" %% "zio-config-magnolia" % Versions.zioConfig,
+    "dev.zio" %% "zio-config-typesafe" % Versions.zioConfig
+  )
+
 
   val quill = Seq(
-    "io.getquill" %% "quill-jdbc-zio" % quillVersion,
-    "io.getquill" %% "quill-core" % quillVersion
-  )
+    "io.getquill" %% "quill-jdbc-zio",
+    "io.getquill" %% "quill-core"
+  ).map(_ % Versions.quill)
 
-  val postgresVersion = "42.2.24"
 
   val postgres = Seq(
-    "org.postgresql" % "postgresql" % postgresVersion
+    "org.postgresql" % "postgresql" % Versions.postgres
   )
 
-//  val redis4CatsVersion = "1.0.0"
-//
-//  val cache = Seq(
-//    "dev.profunktor" %% "redis4cats-effects" % redis4CatsVersion
-//  )
-
-  val circeVersion = "0.14.1"
-
-  lazy val zioFamily = Seq(
-    "dev.zio" %% "zio-streams" % "1.0.2",
-    "dev.zio" %% "zio-kafka" % "0.17.1",
-    "dev.zio" %% "zio-opentracing" % "0.9.0"
+  val zio = Seq(
+    "dev.zio" %% "zio"                         % Versions.zio,
+    "dev.zio" %% "zio-nio"                     % "1.0.0-RC12",
+    "dev.zio" %% "zio-streams"                 % Versions.zio,
+    "dev.zio" %% "zio-interop-reactivestreams" % "1.3.12",
+    "dev.zio" %% "zio-metrics-prometheus"      % "1.0.14",
+    "dev.zio" %% "zio-zmx"                     % "0.0.13",
+    "io.github.kitlangton" %% "zio-magic"      % "0.3.12"
   )
 
-//  val opentracingVersion = "0.33.0"
-//
-//  val jaegerVersion = "1.7.0"
-//
-//  val zipkinVersion = "2.16.3"
-//
-//  lazy val opentracingFamily = Seq(
-//    "io.opentracing" % "opentracing-api" % opentracingVersion,
-//    "io.opentracing" % "opentracing-noop" % opentracingVersion,
-//    "io.opentracing" % "opentracing-mock" % opentracingVersion % Test,
-//    "io.opentracing.contrib" % "opentracing-kafka-client" % "0.1.15",
-//    // zipkin
-//    "io.jaegertracing" % "jaeger-core" % jaegerVersion,
-//    "io.jaegertracing" % "jaeger-client" % jaegerVersion,
-//    "io.jaegertracing" % "jaeger-zipkin" % jaegerVersion,
-//    "io.zipkin.reporter2" % "zipkin-reporter" % zipkinVersion,
-//    "io.zipkin.reporter2" % "zipkin-sender-okhttp3" % zipkinVersion
-//  )
+
+  val zioFamily = zio ++ zioTest ++ zioConfig
+
 
   lazy val circeFamily = Seq(
     "io.circe" %% "circe-core",
     "io.circe" %% "circe-generic",
     "io.circe" %% "circe-parser",
     "io.circe" %% "circe-generic-extras"
-  ).map(_ % circeVersion) :+ "io.circe" %% "circe-config" % "0.8.0"
+  ).map(_ % Versions.circe) :+ "io.circe" %% "circe-config" % "0.8.0"
 
-//
-//  val cloudEvents = Seq(
-//    "io.cloudevents" % "cloudevents-kafka" % "2.2.1"
-//  )
+
 
   val coreDependency =
-    tapir ++ log ++ quill ++ postgres ++ http4s ++ circeFamily  ++ zioFamily
+    tapir ++ logging ++ quill ++ postgres ++ http4s ++ circeFamily  ++ zioFamily
 }
