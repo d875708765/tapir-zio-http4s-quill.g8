@@ -22,8 +22,8 @@ sealed trait Error extends Exception {
 
   override final def getMessage: String =
     s"""
-       |message: ${message}
-       |reason: ${reason.getMessage}
+       |message: \${message}
+       |reason: \${reason.getMessage}
        |""".stripMargin
 }
 
@@ -61,12 +61,12 @@ object Error {
 
       override def toString: String =
         s"""
-           |method: ${method}
-           |uri: ${uri}
-           |headers: ${headers}
-           |body: ${body.getOrElse("")}
-           |status: ${status}
-           |responseBody: ${responseBody.getOrElse("")}
+           |method: \${method}
+           |uri: \${uri}
+           |headers: \${headers}
+           |body: \${body.getOrElse("")}
+           |status: \${status}
+           |responseBody: \${responseBody.getOrElse("")}
            |""".stripMargin
 
       /** ignore body
@@ -74,11 +74,11 @@ object Error {
         */
       override def getMessage: String =
         s"""
-           |method: ${method}
-           |uri: ${uri}
-           |headers: ${headers}
-           |status: ${status}
-           |responseBody: ${responseBody}
+           |method: \${method}
+           |uri: \${uri}
+           |headers: \${headers}
+           |status: \${status}
+           |responseBody: \${responseBody}
            |""".stripMargin
     }
 
@@ -92,11 +92,11 @@ object Error {
 
       override def toString: String =
         s"""
-           |tenantId: ${tenantId}
-           |userId: ${userId}
-           |permissionAlias: ${permissionAlias}
-           |openId: ${openId}
-           |type: ${`type`}
+           |tenantId: \${tenantId}
+           |userId: \${userId}
+           |permissionAlias: \${permissionAlias}
+           |openId: \${openId}
+           |type: \${`type`}
            |""".stripMargin
 
       override def getMessage: String = toString
@@ -108,8 +108,8 @@ object Error {
     ) extends Reason {
       override def toString: String =
         s"""
-           |expected: ${expected}
-           |actual: ${actual}
+           |expected: \${expected}
+           |actual: \${actual}
            |""".stripMargin
 
       override def getMessage: String = toString
