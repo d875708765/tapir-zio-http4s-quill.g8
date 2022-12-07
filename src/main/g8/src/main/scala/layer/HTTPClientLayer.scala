@@ -2,20 +2,35 @@ package layer
 
 import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.Client
+import sttp.capabilities
+import sttp.capabilities.zio.ZioStreams
+import sttp.client3.httpclient.zio.HttpClientZioBackend
+import sttp.client3.{SttpBackend, SttpBackendOptions}
 import zio.interop.catz._
-import zio.logging.Logging
-import zio.{Has, Task, ZLayer, ZManaged}
+import zio.{Task, ZIO, ZLayer}
+
+import java.net.http.HttpClient
+import scala.concurrent.duration.DurationInt
 
 object HTTPClientLayer {
 
-  val http4sLive: ZLayer[Logging with zio.ZEnv, Nothing, Has[Client[Task]]] =
-    ZManaged
-      .runtime[zio.ZEnv]
-      .flatMap { implicit runtime =>
-        BlazeClientBuilder[Task].resource.toManagedZIO
-      }
-      .tapCause(e => Logging.error("http4s 初始化错误, 不太可能发生", e).toManaged_)
+  object Http4s {
+
+    val live: ZLayer[Any, Nothing, Client[Task]] = ZLayer
+      .scoped(
+        BlazeClientBuilder[Task]
+          .withConnectTimeout(3.second)
+          .withRequestTimeout(30.second)
+          .withMaxTotalConnections(500)
+          .withMaxConnectionsPerRequestKey(
+            Function.const(400)
+          )
+          .withMaxWaitQueueLimit(512)
+          .resource
+          .toScopedZIO
+      )
+      .tapErrorCause(e => ZIO.logErrorCause("init http4s client failed", e))
       .orDie
-      .toLayer
+  }
 
 }

@@ -1,29 +1,31 @@
 import layer.DatabaseLayer.Persistent
 import org.http4s.client.Client
-import types.config.AppConfig
 import zio.logging.Logging
+import layer.ConfigLayer
 import zio.magic._
 import zio.{Has, Task, ULayer, ZEnv, ZLayer}
 
 package object layer {
 
-  type Http4s = Has[Client[Task]]
+  type CustomConfig = AppConfig
 
-  type AllEnv = ZEnv with Logging with Http4s with Persistent with CustomConfig
+  type AllEnv = Logging with Http4s with Persistent with CustomConfig
 
-  type CustomConfig = Has[AppConfig]
+  type Http4s = Client[Task]
 
-  val http4sLayer: ZLayer[Logging with zio.ZEnv, Nothing, Has[Client[Task]]] =
-    HTTPClientLayer.http4sLive
+  val http4sLayer: ZLayer[Any, Nothing, Client[Task]] =
+    HTTPClientLayer.Http4s.live
 
-  val loggingLayer: ULayer[Logging] = LoggingLayer.live
+  val loggingLayer: ZLayer[Any, Nothing, Unit] = LoggingLayer.live
 
-  val all: ZLayer[Any, Nothing, AllEnv] = ZLayer.wire[AllEnv](
-    ZEnv.live,
+  val databaseLayer: ZLayer[Any, Nothing, Persistent] = DatabaseLayer.quill.live
+
+
+  val all: ZLayer[Any, Nothing, AllEnv] = ZLayer.make[AllEnv](
     loggingLayer,
     http4sLayer,
     ConfigLayer.live,
-    DatabaseLayer.quill.live
+    databaseLayer
   )
 
 }
