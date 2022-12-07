@@ -1,57 +1,100 @@
 package types.error
 
-import io.circe.Json
 import io.circe.generic.JsonCodec
-
-import java.time.LocalDateTime
 
 object ErrorInfos {
 
-  sealed trait ErrorInfo
+  sealed trait ErrorInfo {
+
+    val message: String
+
+    val englishMessage: String
+
+    val detail: Option[String]
+
+  }
 
   @JsonCodec
-  case class GlobalResultError(
-      data: Json,
-      timestamp: LocalDateTime = LocalDateTime.now(),
-      message: String = "success!"
+  case class NotFound(
+      message: String = "not found!",
+      englishMessage: String = "not found!",
+      detail: Option[String]
   ) extends ErrorInfo
 
   @JsonCodec
-  case class GlobalPageResultError(
-      data: Json,
-      current: Int,
-      pageSize: Int,
-      total: Long,
-      timestamp: LocalDateTime = LocalDateTime.now(),
-      message: String = "success!"
+  case class Unauthorized(
+      message: String = "unauthorized",
+      englishMessage: String = "unauthorized",
+      detail: Option[String] = None
   ) extends ErrorInfo
 
   @JsonCodec
-  case class ResultOk(
-      data: Json,
-      timestamp: LocalDateTime = LocalDateTime.now(),
-      message: String = "success!"
+  case class NonAuthoritativeInformation(
+      message: String = "rule engine loading!",
+      englishMessage: String = "rule engine loading!",
+      detail: Option[String] = None
   ) extends ErrorInfo
 
   @JsonCodec
-  case class NotFound(message: String) extends ErrorInfo
+  case class BadRequest(
+      message: String = "rule engine loading!",
+      englishMessage: String = "rule engine loading!",
+      detail: Option[String] = None
+  ) extends ErrorInfo
 
   @JsonCodec
-  case class Unauthorized(message: String = "unauthorized") extends ErrorInfo
+  case class InternalServerError(
+      message: String = "internal server error",
+      englishMessage: String = "internal server error!",
+      detail: Option[String] = None
+  ) extends ErrorInfo
 
   @JsonCodec
-  case class BadRequest(message: String) extends ErrorInfo
+  case class Forbidden(
+      message: String,
+      englishMessage: String,
+      detail: Option[String] = None
+  ) extends ErrorInfo
 
   @JsonCodec
-  case class InternalServerError(message: String = "internal server error")
-      extends ErrorInfo
+  case class Conflict(
+      message: String,
+      englishMessage: String,
+      detail: Option[String] = None
+  ) extends ErrorInfo
+
+  /*
+  428 - Precondition Required
+   */
+  @JsonCodec
+  case class PreconditionRequired(
+      message: String,
+      englishMessage: String,
+      detail: Option[String] = None
+  ) extends ErrorInfo
+
+  /** TooManyRequests 429
+    * @param message
+    *   rate limit exceeded
+    */
+  @JsonCodec
+  case class TooManyRequests(
+      message: String,
+      englishMessage: String,
+      detail: Option[String] = None
+  ) extends ErrorInfo
 
   @JsonCodec
-  case class Unknown(message: String = "Unknown") extends ErrorInfo
+  case class Locked(
+      message: String,
+      englishMessage: String,
+      detail: Option[String] = None
+  ) extends ErrorInfo
 
   @JsonCodec
-  case class Forbidden(message: String) extends ErrorInfo
-
-  @JsonCodec
-  case class Conflict(message: String) extends ErrorInfo
+  case class NotAcceptable(
+      message: String,
+      englishMessage: String,
+      detail: Option[String] = None
+  ) extends ErrorInfo
 }

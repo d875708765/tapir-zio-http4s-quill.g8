@@ -1,17 +1,18 @@
 package application
 
 import cats.data.Kleisli
+import layer.AllEnv
+import layer.ConfigLayer.AppConfig
 import org.http4s.blaze.server.BlazeServerBuilder
 import org.http4s.server.Router
 import org.http4s.{Request, Response}
-import types.config.AppConfig
 import zio.config.getConfig
 import zio.interop.catz._
-import zio.{ExitCode, RIO, URIO, ZIO}
+import zio.{RIO, Scope, ZIO, ZIOAppArgs, ZIOAppDefault}
 
-object Loader extends CatsApp {
+object Loader extends ZIOAppDefault {
 
-  override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] = {
+  override def run: ZIO[ZIOAppArgs with Scope, Throwable, Unit] = {
 
     val allRoutes: Kleisli[RIO[AllEnv, *], Request[RIO[AllEnv, *]], Response[
       RIO[AllEnv, *]
@@ -20,23 +21,27 @@ object Loader extends CatsApp {
     ).orNotFound
 
     /** web 服务
-     */
-    val server: ZIO[AllEnv, Throwable, Unit] =
-      ZIO.runtime[AllEnv].flatMap { implicit runtime =>
+      */
+    val server: ZIO[AllEnv, Throwable, Unit] = {
+      import scala.concurrent.duration.DurationInt
+      ZIO.executorWith[AllEnv, Throwable, Unit] { executor =>
         for {
-          serverConfig <- getConfig[AppConfig].map(_.serverConfig)
+          appConfig <- getConfig[AppConfig]
+          serverConfig = appConfig.serverConfig
           _ <- BlazeServerBuilder[RIO[AllEnv, *]]
-            .withExecutionContext(runtime.platform.executor.asEC)
+            .withExecutionContext(executor.asExecutionContext)
             .bindHttp(serverConfig.port, serverConfig.host)
+            .withIdleTimeout(5.minute)
+            .withResponseHeaderTimeout(3.minute)
             .withHttpApp(allRoutes)
             .serve
             .compile
             .drain
         } yield ()
       }
+    }
 
-    (server)
+    (server).unit
       .provideLayer(all)
-      .exitCode
   }
 }

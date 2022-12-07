@@ -57,6 +57,10 @@ object Dependencies {
     "dev.zio" %% "zio-config-typesafe" % Versions.zioConfig
   )
 
+  val zioCache = Seq(
+    "dev.zio" %% "zio-cache" % Versions.zioCache
+  )
+
   val zio = Seq(
     "dev.zio" %% "zio" % Versions.zio,
     "dev.zio" %% "zio-nio" % "2.0.0",
@@ -79,10 +83,7 @@ object Dependencies {
     "io.circe" %% "circe-core",
     "io.circe" %% "circe-generic",
     "io.circe" %% "circe-parser",
-    "io.circe" %% "circe-pointer"
-  ).map(_ % Versions.circe) ++ Seq(
-    "org.gnieh" %% "diffson-circe" % "4.3.0"
-  )
+  ).map(_ % Versions.circe)
 
   val coreDependency =
     tapir ++ logging ++ quill ++ postgres ++ http4s ++ circeFamily ++ zioFamily ++ monocle

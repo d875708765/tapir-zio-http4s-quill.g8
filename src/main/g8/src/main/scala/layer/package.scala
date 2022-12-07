@@ -1,15 +1,13 @@
+import layer.ConfigLayer.AppConfig
 import layer.DatabaseLayer.Persistent
 import org.http4s.client.Client
-import zio.logging.Logging
-import layer.ConfigLayer
-import zio.magic._
-import zio.{Has, Task, ULayer, ZEnv, ZLayer}
+import zio.{Task, ZLayer}
 
 package object layer {
 
   type CustomConfig = AppConfig
 
-  type AllEnv = Logging with Http4s with Persistent with CustomConfig
+  type AllEnv = Http4s with Persistent with CustomConfig
 
   type Http4s = Client[Task]
 
@@ -20,11 +18,12 @@ package object layer {
 
   val databaseLayer: ZLayer[Any, Nothing, Persistent] = DatabaseLayer.quill.live
 
+  val configLayer = ConfigLayer.live
 
   val all: ZLayer[Any, Nothing, AllEnv] = ZLayer.make[AllEnv](
     loggingLayer,
     http4sLayer,
-    ConfigLayer.live,
+    configLayer,
     databaseLayer
   )
 

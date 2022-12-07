@@ -2,14 +2,9 @@ package layer
 
 import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.Client
-import sttp.capabilities
-import sttp.capabilities.zio.ZioStreams
-import sttp.client3.httpclient.zio.HttpClientZioBackend
-import sttp.client3.{SttpBackend, SttpBackendOptions}
 import zio.interop.catz._
 import zio.{Task, ZIO, ZLayer}
 
-import java.net.http.HttpClient
 import scala.concurrent.duration.DurationInt
 
 object HTTPClientLayer {

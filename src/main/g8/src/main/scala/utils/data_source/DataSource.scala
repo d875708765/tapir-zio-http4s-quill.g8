@@ -32,26 +32,26 @@ object DataSource {
 
     implicit class JsonBOps(left: Json) {
       def :||(right: Json) = quote(
-        infix"\${left} || \${right}::jsonb".as[Json]
+        infix"${left} || ${right}::jsonb".as[Json]
       )
     }
 
     implicit class InstantOps(dt: Instant) {
 
       val > = quote { (right: Instant) =>
-        infix"\$dt > \$right".as[Boolean]
+        infix"$dt > $right".as[Boolean]
       }
 
       val >= = quote { (right: Instant) =>
-        infix"\$dt >= \$right".as[Boolean]
+        infix"$dt >= $right".as[Boolean]
       }
 
       val < = quote { (right: Instant) =>
-        infix"\$dt < \$right".as[Boolean]
+        infix"$dt < $right".as[Boolean]
       }
 
       val <= = quote { (right: Instant) =>
-        infix"\$dt <= \$right".as[Boolean]
+        infix"$dt <= $right".as[Boolean]
       }
 
     }
@@ -59,19 +59,19 @@ object DataSource {
     implicit class LocalDateTimeOps(left: LocalDateTime) {
 
       val :> = quote { (right: LocalDateTime) =>
-        infix"\$left > \$right".as[Boolean]
+        infix"$left > $right".as[Boolean]
       }
 
       val :>= = quote { (right: LocalDateTime) =>
-        infix"\$left >= \$right".as[Boolean]
+        infix"$left >= $right".as[Boolean]
       }
 
       val :< = quote { (right: LocalDateTime) =>
-        infix"\$left < \$right".as[Boolean]
+        infix"$left < $right".as[Boolean]
       }
 
       val :<= = quote { (right: LocalDateTime) =>
-        infix"\$left <= \$right".as[Boolean]
+        infix"$left <= $right".as[Boolean]
       }
 
     }
