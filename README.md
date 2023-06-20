@@ -9,7 +9,7 @@ sbt new d875708765/tapir-zio-http4s-quill.g8
 
 The scala tools and version are:
 - Scala 2.13.7
-- sbt 1.6.1
+- sbt 1.8.3
 
 
 License
